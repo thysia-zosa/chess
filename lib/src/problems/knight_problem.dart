@@ -31,6 +31,7 @@ class KnightProblem {
     'Y',
     'Z',
   ];
+  int moves = 0;
 
   KnightProblem({
     required this.height,
@@ -46,7 +47,7 @@ class KnightProblem {
             'Both sides must be at least 3, the sum of both at least 7');
       }
       var result = makeStep(0, 0);
-      print('possible? $result');
+      print('possible? $result in $moves');
       if (result) {
         print(steps.join(', '));
       }
@@ -58,6 +59,7 @@ class KnightProblem {
   }
 
   bool makeStep(int line, int row) {
+    moves += 1;
     if (line < 0 || line >= width || row < 0 || row >= height) {
       return false;
     }
