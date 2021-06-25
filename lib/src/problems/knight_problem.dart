@@ -31,22 +31,11 @@ class KnightProblem {
     'Y',
     'Z',
   ];
-  late List<int> moves;
 
   KnightProblem({
     required this.height,
     required this.width,
   }) : fields = List.filled(height * width, 1) {
-    moves = [
-      2 * height + 1,
-      2 * height - 1,
-      height + 2,
-      height - 2,
-      -height + 2,
-      -height - 2,
-      -2 * height + 1,
-      -2 * height - 1,
-    ];
     solveKnightProblem();
   }
 
@@ -56,7 +45,7 @@ class KnightProblem {
         throw ArgumentError.value(
             'Both sides must be at least 3, the sum of both at least 7');
       }
-      var result = makeStep(0);
+      var result = makeStep(0, 0);
       print('possible? $result');
       if (result) {
         print(steps.join(', '));
@@ -68,7 +57,11 @@ class KnightProblem {
     }
   }
 
-  bool makeStep(int index) {
+  bool makeStep(int line, int row) {
+    if (line < 0 || line >= width || row < 0 || row >= height) {
+      return false;
+    }
+    var index = line + row * width;
     try {
       if (fields[index] == 0) {
         return false;
@@ -78,17 +71,25 @@ class KnightProblem {
     } catch (e) {
       return false;
     }
-    if (fieldSum() == 0 ||
-        makeStep(index + moves[0]) ||
-        makeStep(index + moves[1]) ||
-        makeStep(index + moves[2]) ||
-        makeStep(index + moves[3]) ||
-        makeStep(index + moves[4]) ||
-        makeStep(index + moves[5]) ||
-        makeStep(index + moves[6]) ||
-        makeStep(index + moves[7])) {
+    if (fieldSum() == 0) {
+      // if (moves.contains(index)) {
+      return true;
+      // }
+      // fields[index] = 1;
+      // return false;
+    }
+    if (makeStep(line + 2, row + 1) ||
+        makeStep(line + 2, row - 1) ||
+        makeStep(line - 2, row + 1) ||
+        makeStep(line - 2, row - 1) ||
+        makeStep(line + 1, row + 2) ||
+        makeStep(line + 1, row - 2) ||
+        makeStep(line - 1, row + 2) ||
+        makeStep(line - 1, row - 2)) {
       return true;
     }
+    fields[index] = 1;
+    steps.removeLast();
     return false;
   }
 
@@ -97,8 +98,8 @@ class KnightProblem {
   }
 
   String fieldName(int index) {
-    var second = (index % width + 1).toString();
-    var first = (index / width).floor();
+    var first = (index % width);
+    var second = ((index / width).floor() + 1).toString();
     return '${fieldLetter(first)}$second';
   }
 
