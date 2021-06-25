@@ -10,4 +10,5 @@ doc/api/
 
 # Custom files and directories
 pubspec.lock
+.vscode/
 
