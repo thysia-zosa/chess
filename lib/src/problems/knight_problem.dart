@@ -1,3 +1,5 @@
+import 'dart:io';
+
 class KnightProblem {
   int height;
   int width;
@@ -77,9 +79,9 @@ class KnightProblem {
             'Both sides must be at least 3, the sum of both at least 7');
       }
       var result = makeStep(0);
-      print('possible? $result in $moves');
+      print('\npossible? $result in $moves');
       if (result) {
-        print(steps.join(', '));
+        print(steps.reversed.toList().join(', '));
       }
     } catch (error, stackTrace) {
       print(error.toString());
@@ -90,20 +92,20 @@ class KnightProblem {
 
   bool makeStep(int index) {
     moves += 1;
-    if (moves % 100000000 == 0) {
-      print(moves);
-    }
+    // if (moves % 10000000 == 0) {
+    //   stdout.write('\r$moves');
+    // }
     try {
       if (fields[index] == 0) {
         return false;
       }
       fields[index] = 0;
-      steps.add(fieldName(index));
     } catch (e) {
       return false;
     }
     if (!fields.contains(1)) {
       // if (moves.contains(index)) {
+      steps.add(fieldName(index));
       return true;
       // }
       // fields[index] = 1;
@@ -111,11 +113,12 @@ class KnightProblem {
     }
     for (var item in posSteps[index]) {
       if (makeStep(item)) {
+      steps.add(fieldName(index));
         return true;
       }
     }
     fields[index] = 1;
-    steps.removeLast();
+    // steps.removeLast();
     return false;
   }
 
