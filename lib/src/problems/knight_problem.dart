@@ -32,12 +32,42 @@ class KnightProblem {
     'Z',
   ];
   int moves = 0;
+  late List<List<int>> posSteps;
 
   KnightProblem({
     required this.height,
     required this.width,
   }) : fields = List.filled(height * width, 1) {
+    posSteps = List<List<int>>.filled(fields.length, []);
+    for (var i = 0; i < posSteps.length; i++) {
+      posSteps[i] = getSteps(i);
+    }
     solveKnightProblem();
+  }
+
+  List<int> getSteps(int index) {
+    var line = index % width;
+    var row = (index / width).floor();
+    var possibilities = <int>[
+      checkMove(line + 2, row + 1),
+      checkMove(line + 2, row - 1),
+      checkMove(line - 2, row + 1),
+      checkMove(line - 2, row - 1),
+      checkMove(line + 1, row + 2),
+      checkMove(line + 1, row - 2),
+      checkMove(line - 1, row + 2),
+      checkMove(line - 1, row - 2),
+    ];
+    possibilities.removeWhere((element) => element < 0);
+    return possibilities;
+  }
+
+  int checkMove(int line, int row) {
+    if (line < 0 || line >= width || row < 0 || row >= height) {
+      return -1;
+    }
+    var index = line + row * width;
+    return index;
   }
 
   void solveKnightProblem() {
@@ -46,7 +76,7 @@ class KnightProblem {
         throw ArgumentError.value(
             'Both sides must be at least 3, the sum of both at least 7');
       }
-      var result = makeStep(0, 0);
+      var result = makeStep(0);
       print('possible? $result in $moves');
       if (result) {
         print(steps.join(', '));
@@ -58,12 +88,11 @@ class KnightProblem {
     }
   }
 
-  bool makeStep(int line, int row) {
+  bool makeStep(int index) {
     moves += 1;
-    if (line < 0 || line >= width || row < 0 || row >= height) {
-      return false;
+    if (moves % 100000000 == 0) {
+      print(moves);
     }
-    var index = line + row * width;
     try {
       if (fields[index] == 0) {
         return false;
@@ -73,30 +102,21 @@ class KnightProblem {
     } catch (e) {
       return false;
     }
-    if (fieldSum() == 0) {
+    if (!fields.contains(1)) {
       // if (moves.contains(index)) {
       return true;
       // }
       // fields[index] = 1;
       // return false;
     }
-    if (makeStep(line + 2, row + 1) ||
-        makeStep(line + 2, row - 1) ||
-        makeStep(line - 2, row + 1) ||
-        makeStep(line - 2, row - 1) ||
-        makeStep(line + 1, row + 2) ||
-        makeStep(line + 1, row - 2) ||
-        makeStep(line - 1, row + 2) ||
-        makeStep(line - 1, row - 2)) {
-      return true;
+    for (var item in posSteps[index]) {
+      if (makeStep(item)) {
+        return true;
+      }
     }
     fields[index] = 1;
     steps.removeLast();
     return false;
-  }
-
-  int fieldSum() {
-    return fields.fold<int>(0, (first, second) => first + second);
   }
 
   String fieldName(int index) {
